@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+ 
+}
+
+model Factory {
+  factoryId       Int      @id @default(autoincrement())
+  factoryCode     String   @unique
+  factoryName     String
+  industryType    String
+  factoryLocation String
+
+  createdAt DateTime @default(now())
+  
+  sapSystem SapSystem?
+  bays          Bay[]
+  machines      Machine[]
+  machineTypes  MachineType[]
+  inventory     InventoryItem[]
+}
+
+model SapSystem {
+  sapSystemId     Int    @id @default(autoincrement())
+  sapInstanceName String
+  integrationType String
+
+  factoryId Int     @unique
+  factory   Factory @relation(fields: [factoryId], references: [factoryId])
+}
+
+
+model Bay {
+  bayId              Int     @id @default(autoincrement())
+  bayName            String
+  maxMachineCapacity Int
+  isActive           Boolean @default(true)
+
+  factoryId Int
+  factory   Factory @relation(fields: [factoryId], references: [factoryId])
+
+  machineTypes MachineType[]
+  machines     Machine[]
+}
+
+model MachineType {
+  machineTypeId Int    @id @default(autoincrement())
+  typeName      String
+  capabilities  Json
+  constraints   Json
+
+  factoryId Int
+  factory   Factory @relation(fields: [factoryId], references: [factoryId])
+
+  bayId Int
+  bay   Bay @relation(fields: [bayId], references: [bayId])
+
+  machines Machine[]
+}
+
+model Machine {
+  machineId       Int     @id @default(autoincrement())
+  modelNumber     String
+  installationDate DateTime
+
+  healthState String
+  usageHours  Float
+  isAvailable Boolean @default(true)
+
+  factoryId Int
+  factory   Factory @relation(fields: [factoryId], references: [factoryId])
+
+  machineTypeId Int
+  machineType   MachineType @relation(fields: [machineTypeId], references: [machineTypeId])
+
+  bayId Int
+  bay   Bay @relation(fields: [bayId], references: [bayId])
+}
+
+model InventoryItem {
+  inventoryId Int     @id @default(autoincrement())
+  materialName String
+  lotNumber    String
+  quantity     Float
+  unit         String
+  sapMaterialId String
+  lastSyncTime DateTime
+
+  factoryId Int
+  factory   Factory @relation(fields: [factoryId], references: [factoryId])
+}
+
+
+
+
+
