@@ -10,34 +10,23 @@ generator client {
 
 datasource db {
   provider = "postgresql"
- 
 }
 
 model Factory {
-  factoryId       Int      @id @default(autoincrement())
-  factoryCode     String   @unique
+  factoryId       Int    @id @default(autoincrement())
+  factoryCode     String @unique
   factoryName     String
   industryType    String
   factoryLocation String
 
   createdAt DateTime @default(now())
-  
-  sapSystem SapSystem?
-  bays          Bay[]
-  machines      Machine[]
-  machineTypes  MachineType[]
-  inventory     InventoryItem[]
+  updatedAt DateTime @updatedAt
+
+  bays         Bay[]
+  machines     Machine[]
+  machineTypes MachineType[]
+  inventory    InventoryItem[]
 }
-
-model SapSystem {
-  sapSystemId     Int    @id @default(autoincrement())
-  sapInstanceName String
-  integrationType String
-
-  factoryId Int     @unique
-  factory   Factory @relation(fields: [factoryId], references: [factoryId])
-}
-
 
 model Bay {
   bayId              Int     @id @default(autoincrement())
@@ -67,14 +56,21 @@ model MachineType {
   machines Machine[]
 }
 
+enum HealthState {
+  OPERATIONAL
+  MAINTENANCE
+  DOWN
+  RETIRED
+}
+
 model Machine {
-  machineId       Int     @id @default(autoincrement())
-  modelNumber     String
+  machineId        Int      @id @default(autoincrement())
+  modelNumber      String
   installationDate DateTime
 
-  healthState String
+  healthState HealthState
   usageHours  Float
-  isAvailable Boolean @default(true)
+  isAvailable Boolean     @default(true)
 
   factoryId Int
   factory   Factory @relation(fields: [factoryId], references: [factoryId])
@@ -84,22 +80,21 @@ model Machine {
 
   bayId Int
   bay   Bay @relation(fields: [bayId], references: [bayId])
+
+  @@index([factoryId])
+  @@index([bayId])
+  @@index([machineTypeId])
 }
 
 model InventoryItem {
-  inventoryId Int     @id @default(autoincrement())
-  materialName String
-  lotNumber    String
-  quantity     Float
-  unit         String
+  inventoryId   Int      @id @default(autoincrement())
+  materialName  String
+  lotNumber     String
+  quantity      Float
+  unit          String
   sapMaterialId String
-  lastSyncTime DateTime
+  lastSyncTime  DateTime
 
   factoryId Int
   factory   Factory @relation(fields: [factoryId], references: [factoryId])
 }
-
-
-
-
-
