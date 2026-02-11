@@ -22,8 +22,9 @@ export const validateRequest =
 
     const value = result.data as any;
     if (value.body) req.body = value.body;
-    if (value.query) req.query = value.query;
-    if (value.params) req.params = value.params;
+    // req.query and req.params are read-only; mutate in place to apply validated/transformed values
+    if (value.query) Object.assign(req.query, value.query);
+    if (value.params) Object.assign(req.params, value.params);
 
     next();
   };

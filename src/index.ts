@@ -6,6 +6,9 @@ import { errorHandler } from './middleware/errorHandler';
 // import { notFound } from './middleware/notFound';
 import factoryRoutes from './routes/factory.routes';
 import bayRoutes from './routes/bay.routes';
+import machineTypeRoutes from './routes/machineType.routes';
+import inventoryRoutes from './routes/inventory.routes';
+
 
 dotenv.config();
 
@@ -25,6 +28,8 @@ app.get('/health', (req, res) => {
 // Routes
 app.use('/api/v1/factories', factoryRoutes);
 app.use('/api/v1', bayRoutes);
+app.use('/api/v1', machineTypeRoutes); 
+app.use('/api/v1', inventoryRoutes); 
 
 // Error handling
 // app.use(notFound);

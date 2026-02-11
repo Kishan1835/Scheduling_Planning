@@ -62,6 +62,15 @@ export class BayService {
   }
 
   async create(factoryId: number, data: CreateBayInput) {
+    const factory = await prisma.factory.findUnique({
+      where: { factoryId },
+    });
+    if (!factory) {
+      const error = new Error('Factory not found') as Error & { code?: string };
+      error.code = 'FACTORY_NOT_FOUND';
+      throw error;
+    }
+
     return await prisma.bay.create({
       data: {
         ...data,

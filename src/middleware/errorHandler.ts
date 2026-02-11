@@ -30,6 +30,17 @@ export const errorHandler = (
                 errorResponse('RESOURCE_NOT_FOUND', 'Resource not found')
             );
         }
+        if (err.code === 'P2003') {
+            return res.status(404).json(
+                errorResponse('RESOURCE_NOT_FOUND', 'Referenced resource not found (e.g. factory does not exist)')
+            );
+        }
+    }
+
+    if ((err as Error & { code?: string }).code === 'FACTORY_NOT_FOUND') {
+        return res.status(404).json(
+            errorResponse('RESOURCE_NOT_FOUND', 'Factory not found')
+        );
     }
 
     // Custom business rule errors

@@ -2,7 +2,10 @@ import { z } from 'zod';
 
 export const createBaySchema = z.object({
   params: z.object({
-    factoryId: z.string(),
+    factoryId: z
+      .string()
+      .refine((val) => /^\d+$/.test(val), 'factoryId must be a positive integer')
+      .transform((val) => parseInt(val, 10)),
   }),
   body: z.object({
     bayName: z.string().min(2).max(50),
